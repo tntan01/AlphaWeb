@@ -18,12 +18,12 @@ const supabase = createClient(
 
 // Cấu trúc danh sách menu đầy đủ của Alpha VN
 const ALL_MENU_ITEMS = [
-  { id: 'dashboard', name: 'Dashboard', path: '/admin', icon: '📊' },
-  { id: 'orders', name: 'Đơn hàng mới', path: '/admin/orders', icon: '🛒', tag: 'NEW' },
-  { id: 'products', name: 'Quản lý Sản phẩm', path: '/admin/products', icon: '📦' },
-  { id: 'posts', name: 'Quản lý Tin tức', path: '/admin/posts', icon: '📰' },
-  { id: 'categories', name: 'Chuyên mục', path: '/admin/categories', icon: '📂' },
-  { id: 'users', name: 'Nhân sự Alpha', path: '/admin/users', icon: '👥' },
+  { id: 'dashboard', name: 'Dashboard', path: '/dashboard', icon: '📊' },
+  { id: 'orders', name: 'Đơn hàng mới', path: '/orders', icon: '🛒', tag: 'NEW' },
+  { id: 'products', name: 'Quản lý Sản phẩm', path: '/products', icon: '📦' },
+  { id: 'posts', name: 'Quản lý Tin tức', path: '/posts', icon: '📰' },
+  { id: 'categories', name: 'Chuyên mục', path: '/categories', icon: '📂' },
+  { id: 'users', name: 'Nhân sự Alpha', path: '/users', icon: '👥' },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
