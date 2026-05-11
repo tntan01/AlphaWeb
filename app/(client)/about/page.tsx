@@ -74,10 +74,13 @@ export default function AboutListPage() {
                                     className="py-8 flex flex-col md:flex-row gap-8 group hover:bg-slate-50/40 transition-all duration-300 px-4 -mx-4 rounded-2xl"
                                 >
                                     {/* 1. ẢNH ĐẠI DIỆN: Đã sửa Link thành /gioi-thieu/ */}
-                                    <Link href={`/gioi-thieu/${post.slug}`} className="w-full md:w-44 h-28 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 flex-shrink-0 flex items-center justify-center shadow-sm">
+                                    <Link
+                                        href={`/gioi-thieu/${post.slug}`}
+                                        className="w-full md:w-28 h-28 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 flex-shrink-0 block shadow-sm"
+                                    >
                                         <img
-                                            src={post.image_url || '/images/logo.png'}
-                                            className={`w-full h-full ${post.image_url ? 'object-cover' : 'object-contain p-5'} group-hover:scale-105 transition-transform duration-700`}
+                                            src={post.featured_image || '/images/icon.png'}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                             alt={post.title}
                                         />
                                     </Link>
