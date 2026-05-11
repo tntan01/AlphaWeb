@@ -22,5 +22,23 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: sans-serif;
+  /* Bỏ Arial - gây lỗi metrics tiếng Việt */
+}
+
+/* FIX CẮT CHỮ TIẾNG VIỆT - OVERRIDE TAILWIND BASE */
+*,
+*::before,
+*::after {
+  word-break: normal;
+  hyphens: none;
+}
+
+.alpha-word-reset,
+.alpha-article-render,
+.alpha-article-render * {
+  word-break: keep-all !important;
+  overflow-wrap: anywhere !important;
+  hyphens: none !important;
+  text-align: left !important;
 }

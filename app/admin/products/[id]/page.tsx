@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import { useRouter, useParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { Be_Vietnam_Pro } from 'next/font/google'
+import { Code, Eye, Loader2, Settings, Image as ImageIcon } from 'lucide-react'
 
 const beVietnam = Be_Vietnam_Pro({
   subsets: ['vietnamese'],
@@ -16,7 +17,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-const ReactQuill = dynamic(() => import('react-quill-new'), { 
+const ReactQuill = dynamic(() => import('react-quill-new'), {
   ssr: false,
   loading: () => <div className="h-64 bg-slate-50 animate-pulse rounded-[2rem]" />
 })
@@ -25,9 +26,9 @@ import 'react-quill-new/dist/quill.snow.css'
 export default function EditProduct() {
   const router = useRouter()
   const { id } = useParams()
-  
+
   const [categories, setCategories] = useState<any[]>([])
-  const [brands, setBrands] = useState<any[]>([]) // 1. State danh sách hãng
+  const [brands, setBrands] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -35,15 +36,16 @@ export default function EditProduct() {
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
   const [description, setDescription] = useState('')
+  const [isHtmlMode, setIsHtmlMode] = useState(false)
   const [price, setPrice] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [gallery, setGallery] = useState<string[]>([])
   const [categoryId, setCategoryId] = useState('')
-  const [brandId, setBrandId] = useState('') // 2. State hãng sản xuất được chọn
+  const [brandId, setBrandId] = useState('')
   const [status, setStatus] = useState('published')
   const [stockStatus, setStockStatus] = useState('instock')
   const [createdAt, setCreatedAt] = useState('')
-  
+
   const [specs, setSpecs] = useState([{ key: '', value: '' }])
   const [docs, setDocs] = useState([{ name: '', url: '' }])
 
@@ -51,8 +53,9 @@ export default function EditProduct() {
     toolbar: [
       [{ 'header': [1, 2, 3, false] }],
       ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
       [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      ['link', 'image'],
+      ['link', 'image', 'video'],
       ['clean']
     ],
   }), [])
@@ -60,7 +63,6 @@ export default function EditProduct() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 3. Fetch thêm bảng brands sắp xếp theo tên ABC
         const [catsRes, brandsRes, productRes] = await Promise.all([
           supabase.from('categories').select('*').eq('type', 'product'),
           supabase.from('brands').select('*').order('name', { ascending: true }),
@@ -79,11 +81,11 @@ export default function EditProduct() {
           setImageUrl(p.image_url || '')
           setGallery(p.images || [])
           setCategoryId(p.category_id || '')
-          setBrandId(p.brand_id || '') // 4. Gán brand_id cũ của sản phẩm
+          setBrandId(p.brand_id || '')
           setStatus(p.status || 'published')
           setStockStatus(p.stock_status || 'instock')
           setCreatedAt(p.created_at || '')
-          
+
           if (p.specifications && Object.keys(p.specifications).length > 0) {
             setSpecs(Object.entries(p.specifications).map(([key, value]) => ({ key, value: String(value) })))
           }
@@ -127,9 +129,9 @@ export default function EditProduct() {
       const { error } = await supabase.storage.from('media').upload(path, file)
       if (error) throw error
       const { data } = supabase.storage.from('media').getPublicUrl(path)
-      const newDocs = [...docs]; 
-      newDocs[index].url = data.publicUrl; 
-      if(!newDocs[index].name) newDocs[index].name = file.name;
+      const newDocs = [...docs];
+      newDocs[index].url = data.publicUrl;
+      if (!newDocs[index].name) newDocs[index].name = file.name;
       setDocs(newDocs)
     } catch (err: any) { alert(err.message) } finally { setUploading(false) }
   }
@@ -143,16 +145,18 @@ export default function EditProduct() {
       return acc
     }, {})
 
-    // 5. Thêm brand_id vào lệnh update
+    const cleanDescription = description.replace(/&nbsp;/g, ' ');
+
     const { error } = await supabase.from('products').update({
-      name, slug, description,
+      name, slug,
+      description: cleanDescription,
       price: price ? parseFloat(price) : 0,
       image_url: imageUrl,
       images: gallery,
       specifications: specsObject,
       documents: docs.filter(d => d.url),
       category_id: categoryId || null,
-      brand_id: brandId || null, // Lưu ID hãng sản xuất
+      brand_id: brandId || null,
       status,
       stock_status: stockStatus
     }).eq('id', id)
@@ -178,7 +182,7 @@ export default function EditProduct() {
       </header>
 
       <form onSubmit={handleUpdate} className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        
+
         <div className="lg:col-span-2 space-y-8">
           <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50 space-y-6">
             <div>
@@ -189,22 +193,46 @@ export default function EditProduct() {
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Giá bán (numeric)</label>
-                <input type="number" value={price} onChange={e => setPrice(e.target.value)} className="w-full p-3 bg-slate-50 border-none rounded-xl mt-2 font-bold text-blue-600 outline-none" />
+                <input type="number" value={price} onChange={e => setPrice(e.target.value)} className="w-full h-[46px] px-4 bg-slate-50 border-none rounded-xl mt-2 font-bold text-blue-600 outline-none" />
               </div>
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Slug (SEO)</label>
-                <input value={slug} readOnly className="w-full p-3 bg-slate-100 border-none rounded-xl mt-2 text-slate-400 font-mono text-xs outline-none" />
+                <input value={slug} readOnly className="w-full h-[46px] px-4 bg-slate-100 border-none rounded-xl mt-2 text-slate-400 font-mono text-xs outline-none flex items-center" />
               </div>
             </div>
 
-            <div>
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Đặc điểm & Mô tả</label>
-              <div className="mt-2 bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-inner">
-                <ReactQuill theme="snow" value={description} onChange={setDescription} modules={modules} className="min-h-[300px]" />
+            <div className="relative">
+              <div className="flex justify-between items-center mb-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Đặc điểm & Mô tả</label>
+                <button
+                  type="button"
+                  onClick={() => setIsHtmlMode(!isHtmlMode)}
+                  className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all flex items-center gap-2 border shadow-sm active:scale-95 ${isHtmlMode ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
+                >
+                  <span className="text-sm">&lt; &gt;</span>
+                  {isHtmlMode ? 'VỀ TRÌNH SOẠN THẢO' : 'CHẾ ĐỘ HTML'}
+                </button>
+              </div>
+              <div className="bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-inner min-h-[450px]">
+                {isHtmlMode ? (
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full h-[450px] p-8 font-mono text-sm bg-slate-900 text-blue-300 outline-none resize-none leading-relaxed"
+                    placeholder="Nhập mã HTML tại đây..."
+                  />
+                ) : (
+                  <ReactQuill
+                    theme="snow"
+                    value={description}
+                    onChange={setDescription}
+                    modules={modules}
+                    className="min-h-[380px]"
+                  />
+                )}
               </div>
             </div>
 
-            {/* THÔNG SỐ KỸ THUẬT */}
             <div className="pt-6 border-t border-slate-100">
               <label className="text-[10px] font-black text-blue-600 uppercase tracking-widest ml-1">Thông số kỹ thuật</label>
               <div className="mt-4 space-y-3">
@@ -219,25 +247,24 @@ export default function EditProduct() {
               </div>
             </div>
 
-            {/* TÀI LIỆU ĐÍNH KÈM */}
             <div className="pt-6 border-t border-slate-100">
               <label className="text-[10px] font-black text-orange-600 uppercase tracking-widest ml-1">Tài liệu (PDF, Catalogue)</label>
               <div className="mt-4 space-y-4">
                 {docs.map((doc, i) => (
                   <div key={i} className="flex gap-4 items-center bg-slate-50 p-4 rounded-[1.5rem] border border-slate-100 group transition-all hover:border-orange-200 shadow-sm">
                     <div className="flex-1 space-y-2">
-                      <input 
-                        placeholder="Tên hiển thị (VD: Catalogue thiết bị)" 
-                        value={doc.name} 
-                        onChange={e => { const nd = [...docs]; nd[i].name = e.target.value; setDocs(nd) }} 
-                        className="w-full p-2 bg-white rounded-xl text-sm font-bold outline-none border border-transparent focus:border-orange-100" 
+                      <input
+                        placeholder="Tên hiển thị (VD: Catalogue thiết bị)"
+                        value={doc.name}
+                        onChange={e => { const nd = [...docs]; nd[i].name = e.target.value; setDocs(nd) }}
+                        className="w-full p-2 bg-white rounded-xl text-sm font-bold outline-none border border-transparent focus:border-orange-100"
                       />
                       <div className="flex items-center gap-3">
-                        <input 
-                          type="file" 
-                          accept=".pdf,.doc,.docx" 
-                          onChange={e => handleDocUpload(e, i)} 
-                          className="text-[10px] block w-full text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 cursor-pointer" 
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={e => handleDocUpload(e, i)}
+                          className="text-[10px] block w-full text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 cursor-pointer"
                         />
                         {doc.url && (
                           <span className="flex-shrink-0 bg-green-500 text-white text-[8px] font-black px-2 py-1 rounded-md shadow-sm">
@@ -246,9 +273,9 @@ export default function EditProduct() {
                         )}
                       </div>
                     </div>
-                    <button 
-                      type="button" 
-                      onClick={() => setDocs(docs.filter((_, idx) => idx !== i))} 
+                    <button
+                      type="button"
+                      onClick={() => setDocs(docs.filter((_, idx) => idx !== i))}
                       className="w-8 h-8 flex items-center justify-center rounded-full bg-red-50 text-red-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
                     >
                       ✕
@@ -256,15 +283,17 @@ export default function EditProduct() {
                   </div>
                 ))}
                 <button type="button" onClick={() => setDocs([...docs, { name: '', url: '' }])} className="flex items-center gap-2 text-[10px] font-black text-orange-600 uppercase mt-2 hover:text-orange-700 transition">
-                   <span className="w-5 h-5 flex items-center justify-center bg-orange-600 text-white rounded-full font-bold">+</span>
-                   Thêm tài liệu Alpha
+                  <span className="w-5 h-5 flex items-center justify-center bg-orange-600 text-white rounded-full font-bold">+</span>
+                  Thêm tài liệu Alpha
                 </button>
               </div>
             </div>
           </div>
 
           <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50 space-y-6">
-            <h3 className="font-bold text-slate-800 px-2 uppercase tracking-tighter">🖼️ Gallery Sản phẩm</h3>
+            <h3 className="font-bold text-[#1e293b] text-xl flex items-center gap-3">
+              <ImageIcon size={22} className="text-blue-500" /> Ảnh sản phẩm
+            </h3>
             <div className="grid grid-cols-4 gap-4">
               {gallery.map((url, i) => (
                 <div key={i} className="aspect-square relative rounded-2xl overflow-hidden border border-slate-100 group shadow-sm">
@@ -282,7 +311,9 @@ export default function EditProduct() {
 
         <div className="space-y-8">
           <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50 space-y-6">
-            <h3 className="font-bold text-slate-800">⚙️ Thiết lập Alpha</h3>
+            <h3 className="font-bold text-[#1e293b] text-xl flex items-center gap-3">
+              <Settings size={22} className="text-slate-400" /> Thiết lập
+            </h3>
             <div className="space-y-4">
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Trạng thái kho</label>
@@ -292,7 +323,6 @@ export default function EditProduct() {
                 </select>
               </div>
 
-              {/* 6. UI Dropdown Hãng sản xuất */}
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Hãng sản xuất Alpha</label>
                 <select value={brandId} onChange={e => setBrandId(e.target.value)} className="w-full p-4 bg-slate-50 border-none rounded-2xl mt-1 outline-none font-bold text-slate-700">
@@ -308,12 +338,12 @@ export default function EditProduct() {
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
-              
+
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Hiển thị website</label>
                 <select value={status} onChange={e => setStatus(e.target.value)} className="w-full p-4 bg-slate-50 border-none rounded-2xl mt-1 outline-none font-black">
-                  <option value="published">Công khai</option>
-                  <option value="draft">Bản nháp</option>
+                  <option value="draft">Bản nháp (Draft)</option>
+                  <option value="published">Công khai (Live)</option>
                 </select>
               </div>
             </div>
@@ -323,7 +353,9 @@ export default function EditProduct() {
           </div>
 
           <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50 space-y-4">
-            <h3 className="font-bold text-slate-800 px-2">🖼️ Ảnh đại diện chính</h3>
+            <h3 className="font-bold text-[#1e293b] text-xl flex items-center gap-3">
+              <ImageIcon size={22} className="text-blue-500" /> Ảnh đại diện chính
+            </h3>
             <div className="aspect-video bg-slate-50 rounded-3xl overflow-hidden border-2 border-dashed border-slate-100 flex items-center justify-center relative shadow-inner">
               {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" /> : <span className="text-slate-300 font-bold text-xs uppercase tracking-widest">No Image</span>}
               {uploading && <div className="absolute inset-0 bg-white/80 flex items-center justify-center animate-pulse text-blue-500 font-bold tracking-widest">UPLOAD...</div>}

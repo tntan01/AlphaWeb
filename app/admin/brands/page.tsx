@@ -65,9 +65,9 @@ export default function BrandManager() {
             {/* HEADER */}
             <div className="flex justify-between items-center max-w-[1440px] mx-auto">
                 <div>
-                    <h1 className="text-5xl font-[900] text-slate-800 tracking-tighter uppercase italic">Hãng <span className="text-blue-600">Alpha</span></h1>
+                    <h1 className="text-3xl font-[900] text-slate-800 tracking-tighter uppercase italic">Thương hiệu</h1>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2 bg-white inline-block px-4 py-1 rounded-full shadow-sm border border-slate-100">
-                        Supply Chain Center ({totalCount})
+                        Số thương hiệu hiện có ({totalCount})
                     </p>
                 </div>
                 <button
@@ -99,11 +99,10 @@ export default function BrandManager() {
                 <table className="w-full text-left table-fixed border-collapse">
                     <thead className="bg-[#f8fafc] border-b border-slate-100">
                         <tr>
-                            {/* TOÀN BỘ CỘT ÉP text-left */}
-                            <th className="py-10 px-10 text-[11px] font-[900] text-slate-400 uppercase tracking-[0.25em] text-left whitespace-nowrap w-[45%]">Thương hiệu & Logo</th>
-                            <th className="py-10 px-6 text-[11px] font-[900] text-slate-400 uppercase tracking-[0.25em] text-left whitespace-nowrap w-[15%]">Đường dẫn</th>
-                            <th className="py-10 px-6 text-[11px] font-[900] text-slate-400 uppercase tracking-[0.25em] text-left whitespace-nowrap w-[25%]">Giới thiệu</th>
-                            <th className="py-10 px-10 text-[11px] font-[900] text-slate-400 uppercase tracking-[0.25em] text-left whitespace-nowrap w-[15%]">Quản lý</th>
+                            <th className="py-6 px-10 text-[11px] font-[900] text-slate-400 uppercase tracking-[0.25em] text-left whitespace-nowrap w-[45%]">Thương hiệu & Logo</th>
+                            <th className="py-6 px-6 text-[11px] font-[900] text-slate-400 uppercase tracking-[0.25em] text-left whitespace-nowrap w-[15%]">Đường dẫn</th>
+                            <th className="py-6 px-6 text-[11px] font-[900] text-slate-400 uppercase tracking-[0.25em] text-left whitespace-nowrap w-[25%]">Giới thiệu</th>
+                            <th className="py-6 px-10 text-[11px] font-[900] text-slate-400 uppercase tracking-[0.25em] text-left whitespace-nowrap w-[15%]">Quản lý</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
@@ -111,33 +110,31 @@ export default function BrandManager() {
                             <tr><td colSpan={4} className="p-32 text-center font-black text-slate-300 animate-pulse text-xs uppercase">Đang đồng bộ Alpha...</td></tr>
                         ) : brands.map((brand) => (
                             <tr key={brand.id} className="hover:bg-slate-50/40 transition-all group">
-                                <td className="py-12 px-10 text-left">
-                                    <div className="flex items-center gap-8">
-                                        <div className="w-24 h-24 rounded-[2rem] bg-white border border-slate-100 flex-shrink-0 flex items-center justify-center p-4 shadow-sm group-hover:shadow-md transition-all group-hover:scale-105">
+                                <td className="py-6 px-10 text-left">
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-16 h-16 rounded-2xl bg-white border border-slate-100 flex-shrink-0 flex items-center justify-center p-3 shadow-sm group-hover:shadow-md transition-all group-hover:scale-105">
                                             {brand.logo_url ? (
                                                 <img src={brand.logo_url} className="max-w-full max-h-full object-contain" alt={brand.name} />
                                             ) : (
-                                                <span className="text-[10px] font-black text-slate-200 uppercase">Logo</span>
+                                                <span className="text-[8px] font-black text-slate-200 uppercase">Logo</span>
                                             )}
                                         </div>
                                         <div>
-                                            <p className="font-[900] text-slate-800 text-2xl uppercase tracking-tight italic leading-tight">{brand.name}</p>
-
+                                            <p className="font-[900] text-slate-800 text-lg uppercase tracking-tight italic leading-tight">{brand.name}</p>
                                         </div>
                                     </div>
                                 </td>
-                                <td className="py-12 px-6 text-left">
+                                <td className="py-6 px-6 text-left">
                                     <span className="text-[10px] font-mono bg-white text-slate-400 px-3 py-2 rounded-xl border border-slate-100">
                                         /{brand.slug}
                                     </span>
                                 </td>
-                                <td className="py-12 px-6 text-left">
-                                    <p className="text-[13px] text-slate-500 font-medium leading-relaxed break-words">
+                                <td className="py-6 px-6 text-left">
+                                    <p className="text-[13px] text-slate-500 font-medium leading-relaxed break-words line-clamp-2">
                                         {brand.description ? stripHtml(brand.description) : 'Chưa có mô tả.'}
                                     </p>
                                 </td>
-                                <td className="py-12 px-10 text-left">
-                                    {/* justify-start để nút bám lề trái cùng hàng với tiêu đề */}
+                                <td className="py-6 px-10 text-left">
                                     <div className="flex items-center justify-start gap-6">
                                         <Link
                                             href={`/admin/brands/${brand.id}`}
@@ -161,7 +158,7 @@ export default function BrandManager() {
                 {/* PHÂN TRANG */}
                 <div className="p-10 bg-[#f8fafc]/50 border-t border-slate-100 flex justify-between items-center">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">
-                        Alpha System: <span className="text-slate-800 not-italic">{totalCount}</span> thương hiệu
+                        TỔNG SỐ: <span className="text-slate-800 not-italic">{totalCount}</span> THƯƠNG HIỆU
                     </p>
                     <div className="flex items-center gap-10">
                         <p className="text-xs font-black text-blue-600 uppercase italic">Trang {currentPage} / {totalPages || 1}</p>

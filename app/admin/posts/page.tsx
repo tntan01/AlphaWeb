@@ -75,9 +75,12 @@ export default function PostManager() {
       {/* HEADER */}
       <div className="flex justify-between items-center max-w-[1440px] mx-auto">
         <div>
-          <h1 className="text-5xl font-[900] text-slate-800 tracking-tighter uppercase italic">Tin tức <span className="text-blue-600">Alpha</span></h1>
+          {/* Yêu cầu 1: Giảm kích thước tiêu đề từ text-5xl xuống text-3xl */}
+          <h1 className="text-3xl font-[900] text-slate-800 tracking-tighter uppercase italic">Tin tức <span className="text-blue-600">Alpha</span></h1>
+
+          {/* Yêu cầu 2: Đổi Content Management System sang Bài viết */}
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2 bg-white inline-block px-4 py-1.5 rounded-full shadow-sm border border-slate-100">
-            Content Management System ({totalCount})
+            Bài viết ({totalCount})
           </p>
         </div>
         <button
@@ -130,7 +133,7 @@ export default function PostManager() {
             ) : posts.map((post) => (
               <tr key={post.id} className="hover:bg-slate-50/40 transition-all group">
                 <td className="py-10 px-10 text-left">
-                  <p className="font-[900] text-slate-800 text-lg leading-tight uppercase tracking-tight italic break-words">{post.title}</p>
+                  <p className="font-[900] text-slate-800 text-base leading-tight uppercase tracking-tight italic break-words">{post.title}</p>
                   <p className="text-[10px] text-blue-500 font-black mt-2 uppercase tracking-widest italic whitespace-nowrap">Ngày đăng: {new Date(post.created_at).toLocaleDateString('vi-VN')}</p>
                 </td>
                 <td className="py-10 px-6 text-left whitespace-nowrap">
@@ -167,8 +170,9 @@ export default function PostManager() {
 
         {/* PHÂN TRANG */}
         <div className="p-10 bg-[#f8fafc]/50 border-t border-slate-100 flex justify-between items-center">
+          {/* Yêu cầu 3: Đổi Alpha Content thành TỔNG SỐ: XX BÀI VIẾT ĐÃ ĐĂNG */}
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">
-            Alpha Content: <span className="text-slate-800 not-italic">{totalCount}</span> bài viết đã đăng
+            TỔNG SỐ: <span className="text-slate-800 not-italic">{totalCount}</span> BÀI VIẾT ĐÃ ĐĂNG
           </p>
           <div className="flex items-center gap-10">
             <p className="text-xs font-black text-blue-600 uppercase italic underline underline-offset-4">Trang {currentPage} / {totalPages || 1}</p>

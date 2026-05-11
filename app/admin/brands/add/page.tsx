@@ -1,9 +1,10 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { Be_Vietnam_Pro } from 'next/font/google'
+import { Code, Eye, Loader2, Settings, Image as ImageIcon } from 'lucide-react'
 
 const beVietnam = Be_Vietnam_Pro({
     subsets: ['vietnamese'],
@@ -26,6 +27,7 @@ export default function AddBrand() {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [uploading, setUploading] = useState(false)
+    const [isHtmlMode, setIsHtmlMode] = useState(false)
 
     // --- STATE DỮ LIỆU ---
     const [name, setName] = useState('')
@@ -34,15 +36,23 @@ export default function AddBrand() {
     const [logoUrl, setLogoUrl] = useState('')
     const [websiteUrl, setWebsiteUrl] = useState('')
 
+    // Cấu hình Toolbar theo thứ tự yêu cầu
     const modules = useMemo(() => ({
         toolbar: [
             [{ 'header': [1, 2, 3, false] }],
             ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['link'],
+            ['link', 'image', 'video'],
             ['clean']
         ],
     }), [])
+
+    // Logic làm sạch dữ liệu &nbsp; và cập nhật description
+    const handleDescriptionChange = useCallback((content: string) => {
+        const cleanedContent = content.replace(/&nbsp;/g, ' ');
+        setDescription(cleanedContent);
+    }, []);
 
     // Tự động tạo Slug khi nhập tên
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,8 +114,8 @@ export default function AddBrand() {
         <div className={`${beVietnam.className} max-w-6xl mx-auto pb-20 pt-10 px-4 antialiased`}>
             <header className="flex justify-between items-center mb-10 border-b pb-6">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-800 tracking-tighter uppercase">Thêm <span className="text-blue-600">Hãng sản xuất</span></h1>
-                    <p className="text-slate-400 text-[10px] font-black uppercase mt-1 tracking-widest italic">Alpha Vietnam Supply Chain</p>
+                    <h1 className="text-3xl font-black text-slate-800 tracking-tighter uppercase">Tạo thông tin<span className="text-blue-600"> thương hiệu</span></h1>
+                    <p className="text-slate-400 text-[10px] font-black uppercase mt-1 tracking-widest italic">Thương hiệu đối tác</p>
                 </div>
                 <button type="button" onClick={() => router.back()} className="px-6 py-2 bg-slate-100 text-slate-500 rounded-xl font-bold hover:bg-slate-200 transition">Hủy</button>
             </header>
@@ -132,7 +142,7 @@ export default function AddBrand() {
                                 <input
                                     value={slug}
                                     readOnly
-                                    className="w-full p-3 bg-slate-100 border-none rounded-xl mt-2 text-slate-400 font-mono text-xs outline-none cursor-not-allowed"
+                                    className="w-full h-[52px] px-4 bg-slate-100 border-none rounded-xl mt-2 text-slate-400 font-mono text-sm outline-none cursor-not-allowed flex items-center"
                                 />
                             </div>
                             <div>
@@ -140,22 +150,42 @@ export default function AddBrand() {
                                 <input
                                     value={websiteUrl}
                                     onChange={e => setWebsiteUrl(e.target.value)}
-                                    className="w-full p-3 bg-slate-50 border-none rounded-xl mt-2 font-bold text-blue-600 outline-none"
+                                    className="w-full h-[52px] px-4 bg-slate-50 border-none rounded-xl mt-2 font-bold text-blue-600 outline-none"
                                     placeholder="https://..."
                                 />
                             </div>
                         </div>
 
-                        <div>
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mô tả hãng sản xuất</label>
-                            <div className="mt-2 bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-inner">
-                                <ReactQuill
-                                    theme="snow"
-                                    value={description}
-                                    onChange={setDescription}
-                                    modules={modules}
-                                    className="min-h-[250px]"
-                                />
+                        <div className="relative">
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mô tả hãng sản xuất</label>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsHtmlMode(!isHtmlMode)}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-600 rounded-full transition-all duration-200 border border-slate-200 shadow-sm"
+                                >
+                                    <span className="text-xs font-bold">{isHtmlMode ? 'VIEW MODE' : 'HTML MODE'}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                                </button>
+                            </div>
+
+                            <div className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-inner">
+                                {isHtmlMode ? (
+                                    <textarea
+                                        value={description}
+                                        onChange={(e) => handleDescriptionChange(e.target.value)}
+                                        className="w-full min-h-[300px] p-6 font-mono text-sm bg-slate-900 text-green-400 outline-none"
+                                        placeholder="Nhập mã HTML tại đây..."
+                                    />
+                                ) : (
+                                    <ReactQuill
+                                        theme="snow"
+                                        value={description}
+                                        onChange={handleDescriptionChange}
+                                        modules={modules}
+                                        className="min-h-[250px]"
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
@@ -164,17 +194,21 @@ export default function AddBrand() {
                 {/* CỘT PHẢI: LOGO & THAO TÁC */}
                 <div className="space-y-8">
                     <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50 space-y-6">
-                        <h3 className="font-bold text-slate-800">⚙️ Thiết lập</h3>
+                        <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
+                            <Settings size={20} className="text-slate-400" /> Thao tác
+                        </h3>
                         <button
                             disabled={loading}
                             className="w-full py-5 bg-blue-600 text-white rounded-[1.5rem] font-black shadow-lg shadow-blue-100 hover:bg-blue-700 transition active:scale-95 disabled:bg-slate-200 uppercase tracking-widest"
                         >
-                            {loading ? 'Đang lưu Alpha...' : 'Đăng hãng ngay'}
+                            {loading ? 'Đang lưu ...' : 'Đăng ngay'}
                         </button>
                     </div>
 
                     <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50 space-y-4">
-                        <h3 className="font-bold text-slate-800 px-2">🖼️ Logo thương hiệu</h3>
+                        <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
+                            <ImageIcon size={20} className="text-blue-600" /> Logo
+                        </h3>
                         <div className="aspect-square bg-slate-50 rounded-3xl overflow-hidden border-2 border-dashed border-slate-100 flex items-center justify-center relative shadow-inner p-8">
                             {logoUrl ? (
                                 <img src={logoUrl} className="max-w-full max-h-full object-contain" alt="Preview Logo" />
@@ -197,6 +231,23 @@ export default function AddBrand() {
                 </div>
 
             </form>
+            <style jsx global>{`
+                .ql-container {
+                    font-family: inherit !important;
+                    font-size: 16px !important;
+                }
+                .ql-editor {
+                    min-height: 250px;
+                }
+                .ql-toolbar.ql-snow {
+                    border: none !important;
+                    border-bottom: 1px solid #f1f5f9 !important;
+                    padding: 12px !important;
+                }
+                .ql-container.ql-snow {
+                    border: none !important;
+                }
+            `}</style>
         </div>
     )
 }
