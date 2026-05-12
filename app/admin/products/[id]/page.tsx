@@ -208,7 +208,7 @@ export default function EditProduct() {
               </div>
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Slug (SEO)</label>
-                <input value={slug} readOnly className="w-full h-[46px] px-4 bg-slate-100 border-none rounded-xl mt-2 text-slate-400 font-mono text-xs outline-none flex items-center" />
+                <input value={slug} onChange={e => setSlug(e.target.value)} className="w-full h-[46px] px-4 bg-slate-50 border-none rounded-xl mt-2 text-slate-700 font-mono text-xs outline-none flex items-center border border-transparent focus:border-blue-200" />
               </div>
             </div>
 
@@ -221,7 +221,7 @@ export default function EditProduct() {
                   className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all flex items-center gap-2 border shadow-sm active:scale-95 ${isHtmlMode ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
                 >
                   <span className="text-sm">&lt; &gt;</span>
-                  {isHtmlMode ? 'VỀ TRÌNH SOẠN THẢO' : 'CHẾ ĐỘ HTML'}
+                  {isHtmlMode ? 'VỀ TRÌNH SOẠY THẢO' : 'CHẾ ĐỘ HTML'}
                 </button>
               </div>
               <div className="bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-inner min-h-[450px]">
@@ -352,27 +352,39 @@ export default function EditProduct() {
 
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Hiển thị website</label>
-                <select value={status} onChange={e => setStatus(e.target.value)} className="w-full p-4 bg-slate-50 border-none rounded-2xl mt-1 outline-none font-black">
-                  <option value="draft">Bản nháp (Draft)</option>
-                  <option value="published">Công khai (Live)</option>
+                <select
+                  value={status}
+                  onChange={e => setStatus(e.target.value)}
+                  className={`w-full p-4 border-none rounded-2xl mt-1 outline-none font-black ${status === 'published' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'}`}
+                >
+                  <option value="published">🌐 CÔNG KHAI (LIVE)</option>
+                  <option value="draft">📁 BẢN NHÁP (DRAFT)</option>
                 </select>
               </div>
 
               {/* MỚI: Thêm lựa chọn Hiển thị trang chủ */}
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Hiển thị trang chủ</label>
-                <select value={showOnHomepage ? 'true' : 'false'} onChange={e => setShowOnHomepage(e.target.value === 'true')} className="w-full p-4 bg-slate-50 border-none rounded-2xl mt-1 outline-none font-black">
-                  <option value="true">Có</option>
-                  <option value="false">Không</option>
+                <select
+                  value={showOnHomepage ? 'true' : 'false'}
+                  onChange={e => setShowOnHomepage(e.target.value === 'true')}
+                  className={`w-full p-4 border-none rounded-2xl mt-1 outline-none font-black ${showOnHomepage ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'}`}
+                >
+                  <option value="true">✅ CÓ HIỂN THỊ</option>
+                  <option value="false">❌ KHÔNG HIỂN THỊ</option>
                 </select>
               </div>
 
               {/* MỚI: Thêm lựa chọn Sản phẩm nổi bật */}
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Sản phẩm nổi bật</label>
-                <select value={isFeatured ? 'true' : 'false'} onChange={e => setIsFeatured(e.target.value === 'true')} className="w-full p-4 bg-slate-50 border-none rounded-2xl mt-1 outline-none font-black">
-                  <option value="true">Nổi bật</option>
-                  <option value="false">Thường</option>
+                <select
+                  value={isFeatured ? 'true' : 'false'}
+                  onChange={e => setIsFeatured(e.target.value === 'true')}
+                  className={`w-full p-4 border-none rounded-2xl mt-1 outline-none font-black ${isFeatured ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'}`}
+                >
+                  <option value="true">⭐ NỔI BẬT</option>
+                  <option value="false">⚪ THƯỜNG</option>
                 </select>
               </div>
             </div>
