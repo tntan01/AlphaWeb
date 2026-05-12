@@ -84,7 +84,7 @@ export default function ProductManager() {
       {/* HEADER */}
       <div className="flex justify-between items-center max-w-[1440px] mx-auto">
         <div>
-          <h1 className="text-3xl font-[900] text-slate-800 tracking-tighter uppercase italic text-orange-600">Sản phẩm</h1>
+          <h1 className="text-3xl font-[900] text-slate-800 tracking-tighter uppercase italic">Sản phẩm</h1>
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2 bg-white inline-block px-4 py-1.5 rounded-full shadow-sm border border-slate-100">
             Tổng số sản phẩm ({totalCount})
           </p>

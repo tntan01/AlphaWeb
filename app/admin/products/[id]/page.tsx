@@ -46,6 +46,10 @@ export default function EditProduct() {
   const [stockStatus, setStockStatus] = useState('instock')
   const [createdAt, setCreatedAt] = useState('')
 
+  // MỚI: Thêm state cho 2 trường bổ sung
+  const [showOnHomepage, setShowOnHomepage] = useState(false)
+  const [isFeatured, setIsFeatured] = useState(false)
+
   const [specs, setSpecs] = useState([{ key: '', value: '' }])
   const [docs, setDocs] = useState([{ name: '', url: '' }])
 
@@ -85,6 +89,10 @@ export default function EditProduct() {
           setStatus(p.status || 'published')
           setStockStatus(p.stock_status || 'instock')
           setCreatedAt(p.created_at || '')
+
+          // MỚI: Đổ dữ liệu từ database vào state
+          setShowOnHomepage(p.show_on_homepage || false)
+          setIsFeatured(p.is_featured || false)
 
           if (p.specifications && Object.keys(p.specifications).length > 0) {
             setSpecs(Object.entries(p.specifications).map(([key, value]) => ({ key, value: String(value) })))
@@ -158,7 +166,10 @@ export default function EditProduct() {
       category_id: categoryId || null,
       brand_id: brandId || null,
       status,
-      stock_status: stockStatus
+      stock_status: stockStatus,
+      // MỚI: Cập nhật 2 trường bổ sung vào database
+      show_on_homepage: showOnHomepage,
+      is_featured: isFeatured
     }).eq('id', id)
 
     if (!error) {
@@ -346,7 +357,26 @@ export default function EditProduct() {
                   <option value="published">Công khai (Live)</option>
                 </select>
               </div>
+
+              {/* MỚI: Thêm lựa chọn Hiển thị trang chủ */}
+              <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Hiển thị trang chủ</label>
+                <select value={showOnHomepage ? 'true' : 'false'} onChange={e => setShowOnHomepage(e.target.value === 'true')} className="w-full p-4 bg-slate-50 border-none rounded-2xl mt-1 outline-none font-black">
+                  <option value="true">Có</option>
+                  <option value="false">Không</option>
+                </select>
+              </div>
+
+              {/* MỚI: Thêm lựa chọn Sản phẩm nổi bật */}
+              <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Sản phẩm nổi bật</label>
+                <select value={isFeatured ? 'true' : 'false'} onChange={e => setIsFeatured(e.target.value === 'true')} className="w-full p-4 bg-slate-50 border-none rounded-2xl mt-1 outline-none font-black">
+                  <option value="true">Nổi bật</option>
+                  <option value="false">Thường</option>
+                </select>
+              </div>
             </div>
+
             <button disabled={updating} className="w-full py-5 bg-blue-600 text-white rounded-[1.5rem] font-black shadow-lg shadow-blue-100 hover:bg-blue-700 transition active:scale-95 disabled:bg-slate-200 uppercase tracking-widest">
               {updating ? 'Đang lưu bài...' : 'Cập nhật ngay'}
             </button>

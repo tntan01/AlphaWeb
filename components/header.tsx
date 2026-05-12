@@ -44,7 +44,7 @@ export default function Header() {
 
   return (
     <header className="w-full">
-      {/* 1. TOP BAR - Giữ nguyên 100% */}
+      {/* 1. TOP BAR - Đã thêm chuyển đổi ngôn ngữ */}
       <div className="hidden md:block bg-slate-900 text-white py-2 px-6">
         <div className="max-w-7xl mx-auto flex justify-between items-center text-[10px] font-bold uppercase tracking-widest opacity-90">
           <div className="flex gap-8">
@@ -57,9 +57,45 @@ export default function Header() {
               <span>Hotline: 0968 060 886</span>
             </a>
           </div>
-          <div className="flex items-center gap-2">
-            <MapPin size={12} className="text-orange-500" />
-            <span>Địa chỉ: A10 TT12 đường 19/5, phường Hà Đông, Hà Nội</span>
+
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2">
+              <MapPin size={12} className="text-orange-500" />
+              <span>Địa chỉ: A10 TT12 đường 19/5, phường Hà Đông, Hà Nội</span>
+            </div>
+
+            {/* Chuyển đổi ngôn ngữ */}
+            <div className="flex items-center gap-3 border-l border-white/20 pl-8">
+              <img
+                src="https://flagcdn.com/w40/vn.png"
+                alt="Tiếng Việt"
+                className="w-5 h-auto cursor-pointer hover:scale-110 transition-transform"
+                title="Tiếng Việt"
+              />
+              <button
+                onClick={() => {
+                  const newWindow = window.open("", "_blank");
+                  if (newWindow) {
+                    newWindow.document.write(`
+                      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; background-color: #f8fafc; color: #1e293b; text-align: center; padding: 20px;">
+                        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3ZhcHByZXp2NmtqbmNycTNpZm5pZzZ0ZzV3eDV3eDV3eDV3eDV3eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKSjP3K541u9Ww/giphy.gif" alt="Cute Construction" style="width: 280px; border-radius: 20px; margin-bottom: 24px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);"/>
+                        <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 16px; color: #ea580c;">Coming Soon!</h1>
+                        <p style="font-size: 1.125rem; max-width: 500px; line-height: 1.6; color: #64748b;">We are currently building our English website to serve you better. Please check back later!</p>
+                        <div style="margin-top: 32px; height: 4px; width: 60px; background: #ea580c; border-radius: 2px;"></div>
+                      </div>
+                    `);
+                  }
+                }}
+                className="hover:scale-110 transition-transform outline-none"
+              >
+                <img
+                  src="https://flagcdn.com/w40/gb.png"
+                  alt="English"
+                  className="w-5 h-auto cursor-pointer"
+                  title="English version under construction"
+                />
+              </button>
+            </div>
           </div>
         </div>
       </div>
